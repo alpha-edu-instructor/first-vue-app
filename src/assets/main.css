@@ -68,3 +68,9 @@ textarea {
 body {
   font-family: "Nunito", sans-serif;
 }
+
+:root {
+  --green: #47a76a;
+  --red: #e32636;
+  --border: #cdcdcd;
+}

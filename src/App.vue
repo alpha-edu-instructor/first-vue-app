@@ -1,36 +1,126 @@
 <script setup>
-import Counter from "./components/Counter.vue";
+import { ref, computed } from "vue";
+import Form from "./components/Form.vue";
+import TaskItem from "./components/TaskItem.vue";
+
+const tasks = ref([
+  {
+    name: "Приготовить ужин",
+    isCompleted: false
+  }
+]);
+
+// Добавление новой задачи
+const taskName = ref("");
+
+function handleInput(val) {
+  taskName.value = val;
+}
+
+function addTask() {
+  if (taskName.value.trim() === "") {
+    return;
+  }
+
+  const newTask = {
+    name: taskName.value.trim(),
+    isCompleted: false
+  };
+
+  tasks.value.push(newTask);
+  taskName.value = "";
+}
+
+// Обновление состояния задачи
+function toggleTask(task) {
+  task.isCompleted = !task.isCompleted;
+}
+
+// Удаление задачи
+function deleteTask(task) {
+  const idx = tasks.value.indexOf(task);
+  if (idx !== -1) {
+    tasks.value.splice(idx, 1);
+  }
+}
+
+// Сортировка задач
+const sortedTasks = computed(() => {
+  return [...tasks.value].sort((a, b) => {
+    return Number(!b.isCompleted) - Number(!a.isCompleted);
+  });
+});
 </script>
 
 <template>
   <div class="container">
-    <h1 class="title text">Counters App</h1>
-    <div class="grid">
-      <Counter />
-      <Counter />
-      <Counter />
-      <Counter />
-      <Counter />
+    <div class="header">
+      <h1 class="header-title">ToDoList App</h1>
     </div>
+    <Form
+      :taskname="taskName"
+      :set-taskname="handleInput"
+      :add-task="addTask"
+    />
+    <ul class="list">
+      <TaskItem
+        v-for="(task, index) in sortedTasks"
+        :key="index"
+        :toggle-task="() => toggleTask(task)"
+        :delete-task="() => deleteTask(task)"
+        :task="task"
+      />
+    </ul>
   </div>
 </template>
 
-<style scoped>
+<style>
 .container {
-  width: 1200px;
+  width: 960px;
   margin: 100px auto;
+  border: 1px solid var(--border);
+  border-radius: 36px;
+  padding: 32px 48px;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 24px 40px;
-}
-
-.title {
+.header-title {
   font-size: 32px;
   line-height: 40px;
   font-weight: 700;
-  margin-bottom: 40px;
+  text-align: center;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-green {
+  border: 1px solid var(--green);
+  background: var(--green);
+}
+
+.btn-green:hover {
+  background: #fff;
+  color: var(--green);
+}
+
+.btn-red {
+  border: 1px solid var(--red);
+  background: var(--red);
+}
+
+.btn-red:hover {
+  background: #fff;
+  color: var(--red);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 </style>
