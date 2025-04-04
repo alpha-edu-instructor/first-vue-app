@@ -1,14 +1,28 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import Form from "./components/Form.vue";
 import TaskItem from "./components/TaskItem.vue";
 
-const tasks = ref([
-  {
-    name: "Приготовить ужин",
-    isCompleted: false
+const tasks = ref([]);
+
+onMounted(() => {
+  const storedTasks = localStorage.getItem("tasks");
+  if (storedTasks) {
+    tasks.value = JSON.parse(storedTasks);
+  } else {
+    tasks.value = [];
   }
-]);
+});
+
+watch(
+  tasks,
+  (newValue) => {
+    localStorage.setItem("tasks", JSON.stringify(newValue));
+  },
+  {
+    deep: true
+  }
+);
 
 // Добавление новой задачи
 const taskName = ref("");
